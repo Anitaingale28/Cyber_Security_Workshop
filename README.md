@@ -233,12 +233,63 @@ MAC address: Which device on this local network receives it?
 | **Static IP** | Manually fixed address that does not change | Server address |
 | **Dynamic IP** | Temporarily assigned address, commonly through DHCP | Home laptop address |
 
-### Private IP Ranges
+###
+## 9.1 IP Ranges — Simple Explanation
+
+An **IP range** is a group of IP addresses. Networks use ranges to identify which devices belong to the same network and which addresses are private or public.
+
+### 9.2 Private IP Ranges
+
+Private IP addresses are used inside homes, colleges, offices, and internal networks. They are not directly routable on the public Internet.
+
+| Private Range | CIDR | Common Use |
+|---|---|---|
+| `10.0.0.0 – 10.255.255.255` | `10.0.0.0/8` | Large companies and enterprise networks |
+| `172.16.0.0 – 172.31.255.255` | `172.16.0.0/12` | Medium to large organizations |
+| `192.168.0.0 – 192.168.255.255` | `192.168.0.0/16` | Home Wi-Fi routers and small networks |
+
+### 9.3 Why These Ranges Are Used
+
+- They prevent conflict between internal devices and public Internet addresses.
+- A home router can give private IPs such as `192.168.1.2`, `192.168.1.3`, and so on.
+- Many organizations can use the same private IP ranges internally because those addresses are not directly exposed on the Internet.
+- A router or NAT device translates private IPs to a public IP for Internet access.
 
 ```text
-10.0.0.0    - 10.255.255.255
-172.16.0.0  - 172.31.255.255
-192.168.0.0 - 192.168.255.255
+Laptop: 192.168.1.10  ─┐
+Phone:  192.168.1.11  ─┼─> Router/NAT ─> Public IP ─> Internet
+Printer:192.168.1.12 ─┘
+```
+
+---
+
+## 9.4 IP Address Classes
+
+IP classes are an older way of dividing IPv4 addresses based on the first number of the address. Modern networks mostly use CIDR, such as `/8`, `/16`, and `/24`, but classes are still important for exams.
+
+| Class | First Octet Range | Default Subnet Mask | Number of Networks | Hosts per Network | Use |
+|---|---:|---|---:|---:|---|
+| **Class A** | `1 – 126` | `255.0.0.0` | 126 | 16,777,214 | Very large networks |
+| **Class B** | `128 – 191` | `255.255.0.0` | 16,384 | 65,534 | Medium-sized networks |
+| **Class C** | `192 – 223` | `255.255.255.0` | 2,097,152 | 254 | Small networks |
+| **Class D** | `224 – 239` | Not used for hosts | — | — | Multicasting |
+| **Class E** | `240 – 255` | Not used for hosts | — | — | Experimental/research use |
+
+### 9.5 Easy Memory Trick
+
+```text
+A = 1–126     → Huge networks
+B = 128–191   → Medium networks
+C = 192–223   → Small networks
+D = 224–239   → Multicast
+E = 240–255   → Experimental
+```
+
+### 9.6 Important Exceptions
+
+- `127.0.0.1` is the **loopback address**, meaning “this computer.”
+- `127.x.x.x` addresses are used for local testing and are not used to identify other devices.
+- `169.254.x.x` is an **APIPA** address, usually shown when DHCP fails.
 ```
 
 ## 10. Subnet Mask, Subnetting, and Default Gateway
@@ -346,7 +397,18 @@ OSI MODEL                    TCP/IP MODEL
 | Use case | Web browsing, email, file transfer | Video streaming, gaming, DNS queries |
 
 ### 13.3 TCP Three-Way Handshake
+TCP flags are small control bits in a TCP packet header. They tell the receiving device what the packet is trying to do, such as start a connection, acknowledge data, or close a connection.
 
+| Flag | Full Form | Simple Meaning | Example |
+|---|---|---|---|
+| **SYN** | Synchronize | “I want to start a connection.” | Client sends SYN to open a TCP connection |
+| **ACK** | Acknowledgment | “I received your data.” | Server acknowledges the client’s SYN |
+| **FIN** | Finish | “I have finished sending data; let’s close politely.” | Either side starts a normal connection close |
+| **RST** | Reset | “Stop immediately. Close the connection now.” | Server rejects a connection to a closed port |
+| **PSH** | Push | “Send this data to the application immediately.” | Chat message or live data needs quick delivery |
+| **URG** | Urgent | “This data is urgent.” | Rarely used in modern networks |
+
+#### TCP 3-Way Handshake Using Flags
 ```text
 Client                         Server
    |                              |
@@ -357,6 +419,28 @@ Client                         Server
    |----------- ACK ------------->|   Step 3
    |                              |
    |      Connection established  |
+
+**SYN** starts the connection.
+- **SYN + ACK** accepts and acknowledges it.
+- **ACK** confirms the connection.
+
+#### Connection Closing
+
+```text
+Client                         Server
+   |                              |
+   |--------- FIN --------------->|   “I am done sending”
+   |                              |
+   |<----------- ACK -------------|   “Okay”
+   |                              |
+   |<----------- FIN -------------|   “I am also done”
+   |                              |
+   |----------- ACK ------------->|   “Connection closed”
+```
+
+- **FIN** politely ends communication.
+- **RST** forcefully ends communication immediately.
+
 ```
 
 > **Security relevance:** Attackers may exploit connection mechanisms through SYN floods, where many incomplete connection requests exhaust server resources.
