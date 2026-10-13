@@ -1,7 +1,6 @@
 # Day 2: Networking Fundamentals for Cyber Security
 
-> **Masterclass Module:** Cyber Security Fundamentals  
-> **Duration:** 2–3 hours  
+> **Masterclass Module:** Cyber Security Fundamentals   
 > **Level:** Beginner  
 > **Prerequisites:** Day 1 — Introduction to Cyber Security  
 > **Learning outcome:** By the end of this module, learners will understand networks, the Internet, network devices, addressing, protocol models, common services, wireless security, and major network-based attacks.
